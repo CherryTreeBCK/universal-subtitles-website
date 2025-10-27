@@ -48,11 +48,6 @@ import {
 } from '#components/highlights'
 import { FallInPlace } from '#components/motion/fall-in-place'
 import faq from '#data/faq'
-export const meta: Metadata = {
-  title: 'Universal Subtitles | Live, translated captions for any app',
-  description:
-    'Universal Subtitles shows live subtitles for any audio playing on your computer and can translate between languages in real time.',
-}
 
 const Home: NextPage = () => {
 
@@ -80,34 +75,36 @@ const HeroSection: React.FC = () => {
     fetchDownloadsCount().then(count => setDownloads(count));
   }, []);
     
-  async function handleDownloadClick(e: React.MouseEvent, downloadUrl: string) {
-    e.preventDefault();            
-    setLoading(true);
-  
+  async function handleDownloadClick(
+    e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>
+  ) {
+    e.preventDefault()
+    setLoading(true)
     try {
-      const { data, error } = await supabase.rpc('increment_website_downloads');
-      if (error) throw error;
+      const { data, error } = await supabase.rpc('increment_website_downloads')
+      if (error) throw error
   
-      let newCount: number | null = null;
+      let newCount: number | null = null
       if (typeof data === 'number') {
-        newCount = data;
+        newCount = data
       } else if (Array.isArray(data)) {
-        newCount = data[0] ?? null;
+        newCount = data[0] ?? null
       } else if (data && typeof data === 'object') {
-        const key = Object.keys(data)[0];
-        newCount = Number((data as any)[key]) || null;
+        const key = Object.keys(data)[0]
+        newCount = Number((data as any)[key]) || null
       }
   
-      if (newCount !== null) setDownloads(newCount);
-
-      window.open(downloadUrl, '_blank');
+      if (newCount !== null) setDownloads(newCount)
+  
+      window.open(downloadUrl, '_blank')
     } catch (err) {
-      console.error('Failed to increment downloads:', err);
-      window.open(downloadUrl, '_blank');
+      console.error('Failed to increment downloads:', err)
+      window.open(downloadUrl, '_blank')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
+  
   return (
     <Box position="relative" overflow="hidden">
       <BackgroundGradient height="100%" zIndex="-1" />

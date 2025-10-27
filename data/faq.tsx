@@ -1,30 +1,27 @@
 import * as React from 'react'
 
 const faq = {
-  title: 'Frequently asked questions',
-  // description: '',
+  title: 'Help Section',
   items: [
     {
-      q: 'How many products can I use Saas UI Pro for?',
+      q: 'My subtitles are not updating. What should I do?',
       a: (
         <>
-          The single license can be used for one commercial application or SaaS
-          product and unlimited internal tools. You can buy as many licenses as
-          you need. <br /> The unlimited license does not have any restrictions.
+          Check if your speakers are powered on. The program cannot detect audio if no output device is connected.
         </>
       ),
     },
     {
-      q: 'Can I use Saas UI Pro for client work?',
-      a: "Yes, that's totally up to you, as long as it fits the license you purchase.",
+      q: 'How can I view the transcription log?',
+      a: "All transcriptions are logged in the terminal window that opens alongside the program.",
     },
     {
-      q: 'Can I use Saas UI Pro for Open Source projects?',
-      a: 'No currently not. A large part of Saas UI is already released under MIT license. We try to give back to the community as much as possible.',
+      q: 'What are the controls?',
+      a: 'To open the settings menu, right click the overlay. The default controls are F9 to show the overlay and F10 to hide it.',
     },
     {
-      q: 'Does Saas UI include Figma, Sketch or other design files?',
-      a: 'No, Saas UI does not include any design assets. Maintaining design resources costs a lot of extra effort. We believe small teams can move much faster by designing directly in code, with help of Storybooks.',
+      q: 'What should I do if I find a bug or have a feature request?',
+      a: 'Please reach out to me on Discord: cherrytree42.',
     },
   ],
 }

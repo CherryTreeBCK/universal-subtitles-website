@@ -15,35 +15,28 @@ import {
   VStack,
   Wrap,
   useClipboard,
+  Spinner,
 } from '@chakra-ui/react'
+
+import { supabase } from 'lib/supabase_client';
+import { useEffect, useState } from 'react'
 import { Br, Link } from '@saas-ui/react'
 import type { Metadata, NextPage } from 'next'
 import Image from 'next/image'
 import {
   FiArrowRight,
-  FiBox,
   FiCheck,
   FiCopy,
   FiFlag,
-  FiGrid,
-  FiLock,
-  FiSearch,
+  FiMonitor,
   FiSliders,
-  FiSmile,
   FiTerminal,
   FiThumbsUp,
-  FiToggleLeft,
-  FiTrendingUp,
-  FiUserPlus,
-  FiGlobe,
-  FiMonitor,
+  FiZap,
   FiMessageSquare,
   FiShield,
-  FiZap,
 } from 'react-icons/fi'
-
 import * as React from 'react'
-
 import { ButtonLink } from '#components/button-link/button-link'
 import { Faq } from '#components/faq'
 import { Features } from '#components/features'
@@ -52,24 +45,17 @@ import { Hero } from '#components/hero'
 import {
   Highlights,
   HighlightsItem,
-  HighlightsTestimonialItem,
 } from '#components/highlights'
-import { ChakraLogo, NextjsLogo } from '#components/logos'
 import { FallInPlace } from '#components/motion/fall-in-place'
-import { Pricing } from '#components/pricing/pricing'
-import { Testimonial, Testimonials } from '#components/testimonials'
-import { Em } from '#components/typography'
 import faq from '#data/faq'
-import pricing from '#data/pricing'
-import testimonials from '#data/testimonials'
-
 export const meta: Metadata = {
-  title: 'Universal Subtitles — Live, translated captions for any app',
+  title: 'Universal Subtitles | Live, translated captions for any app',
   description:
-    'Universal Subtitles shows live subtitles for any audio playing on your computer — calls, videos, apps — and can translate between languages in real time.',
+    'Universal Subtitles shows live subtitles for any audio playing on your computer and can translate between languages in real time.',
 }
 
 const Home: NextPage = () => {
+
   return (
     <Box>
       <HeroSection />
@@ -77,17 +63,51 @@ const Home: NextPage = () => {
       <HighlightsSection />
 
       <FeaturesSection />
-
-      <TestimonialsSection />
-
-      <PricingSection />
-
       <FaqSection />
     </Box>
   )
 }
 
+const downloadUrl = 'https://universal-subtitles.app/download'
+
+import { fetchDownloadsCount } from '../App'
+
 const HeroSection: React.FC = () => {
+  const [downloads, setDownloads] = useState<number | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    fetchDownloadsCount().then(count => setDownloads(count));
+  }, []);
+    
+  async function handleDownloadClick(e: React.MouseEvent, downloadUrl: string) {
+    e.preventDefault();            
+    setLoading(true);
+  
+    try {
+      const { data, error } = await supabase.rpc('increment_website_downloads');
+      if (error) throw error;
+  
+      let newCount: number | null = null;
+      if (typeof data === 'number') {
+        newCount = data;
+      } else if (Array.isArray(data)) {
+        newCount = data[0] ?? null;
+      } else if (data && typeof data === 'object') {
+        const key = Object.keys(data)[0];
+        newCount = Number((data as any)[key]) || null;
+      }
+  
+      if (newCount !== null) setDownloads(newCount);
+
+      window.open(downloadUrl, '_blank');
+    } catch (err) {
+      console.error('Failed to increment downloads:', err);
+      window.open(downloadUrl, '_blank');
+    } finally {
+      setLoading(false);
+    }
+  }
   return (
     <Box position="relative" overflow="hidden">
       <BackgroundGradient height="100%" zIndex="-1" />
@@ -100,49 +120,41 @@ const HeroSection: React.FC = () => {
             title={
               <FallInPlace>
                 Subtitles for everything
-                <Br /> 
+                <Br />
               </FallInPlace>
             }
             description={
               <FallInPlace delay={0.4} fontWeight="medium">
-                  Universal Subtitles creates a floating overlay that shows live
-                  captions for any audio on your computer — calls, meetings,
-                  videos, and apps.
-                <Br />
-                  Translate between languages in real time so you can call, watch,
-                  or work across languages with confidence.
+Universal Subtitles creates a floating overlay that shows live captions for any audio on your computer.
+It helps deaf and hard-of-hearing users follow conversations and media in real time, and can also translate between languages so you can call, watch, or work across languages with confidence.
               </FallInPlace>
             }
           >
             <FallInPlace delay={0.8}>
-
               <ButtonGroup spacing={4} alignItems="center" pt="10">
-                <ButtonLink colorScheme="primary" size="lg" href="/download">
+                <ButtonLink
+                  colorScheme="primary"
+                  size="lg"
+                  href={downloadUrl}
+                  as="button"
+                  onClick={handleDownloadClick}
+                  isLoading={loading}
+                >
                   Download
                 </ButtonLink>
-                <ButtonLink
-                  size="lg"
-                  href="/demo"
-                  variant="outline"
-                  rightIcon={
-                    <Icon
-                      as={FiArrowRight}
-                      sx={{
-                        transitionProperty: 'common',
-                        transitionDuration: 'normal',
-                        '.chakra-button:hover &': {
-                          transform: 'translate(5px)',
-                        },
-                      }}
-                    />
-                  }
-                >
-                  Try demo
-                </ButtonLink>
               </ButtonGroup>
+              <Box mt="3">
+                <HStack spacing="3" alignItems="center">
+                  <FallInPlace delay={0.4} fontSize="sm" color="muted">
+                    Downloads
+                  </FallInPlace>
+                  <FallInPlace fontWeight="bold" fontSize="lg">
+                    {downloads === null ? <Spinner size="xs" /> : downloads.toLocaleString()}
+                  </FallInPlace>
+                </HStack>
+              </Box>
             </FallInPlace>
           </Hero>
-
           <Box
             height="560px"
             position="absolute"
@@ -155,8 +167,7 @@ const HeroSection: React.FC = () => {
             <FallInPlace delay={1}>
               <Box overflow="hidden" height="100%">
                 <Image
-                  // Replace this with an overlay screenshot or animated GIF that shows the subtitle overlay
-                  src="/static/screenshots/list.png"
+                  src="/static/list.png"
                   width={1200}
                   height={675}
                   alt="Universal Subtitles overlay screenshot"
@@ -168,7 +179,7 @@ const HeroSection: React.FC = () => {
           </Box>
         </Stack>
       </Container>
-
+      
       <Features
         id="benefits"
         columns={[1, 2, 4]}
@@ -180,13 +191,13 @@ const HeroSection: React.FC = () => {
             title: 'Works with any app',
             icon: FiMonitor,
             description:
-              'Overlay captions on top of any application — video players, conferencing apps, games, or browsers.',
+              'Overlay captions on top of any application: Video players, conferencing apps, games, or browsers.',
             iconPosition: 'left',
             delay: 0.6,
           },
           {
             title: 'Real-time translation',
-            icon: FiGlobe,
+            icon: FiFlag,
             description:
               'Translate spoken audio between languages so you can call, watch, or collaborate across language barriers.',
             iconPosition: 'left',
@@ -201,23 +212,25 @@ const HeroSection: React.FC = () => {
             delay: 1,
           },
           {
-            title: 'Privacy-first',
+            title: 'Accessibility built in',
             icon: FiShield,
             description:
-              'Built with privacy in mind — configurable processing options let you control how audio and text are handled.',
+              'Empowers Deaf and hard-of-hearing users to fully engage in calls, videos, and media with accurate live captions and high-contrast, customizable text that fits individual needs.',
             iconPosition: 'left',
             delay: 1.1,
           },
+          
+          
+          
         ]}
         reveal={FallInPlace}
       />
+      
     </Box>
   )
 }
 
 const HighlightsSection = () => {
-  // replace this with the acutal url
-  const downloadUrl = 'https://universal-subtitles.app/download'
   const { value, onCopy, hasCopied } = useClipboard(downloadUrl)
 
   return (
@@ -229,90 +242,28 @@ const HighlightsSection = () => {
             displays live captions in an always-on-top overlay. Translate speech
             into another language, or show original-language captions — perfect
             for calls, videos, and meetings.
+            <Br />
+            It also makes conversations and media accessible to people who are
+            Deaf or hard of hearing by providing accurate, low-latency captions
+            with customizable appearance (font size, contrast, position).
           </Text>
-
-          <Flex
-            rounded="full"
-            borderWidth="1px"
-            flexDirection="row"
-            alignItems="center"
-            py="1"
-            ps="8"
-            pe="2"
-            bg="primary.900"
-            _dark={{ bg: 'gray.900' }}
-          >
-            <Box>
-              <Text color="yellow.400" display="inline">
-                Download
-              </Text>{' '}
-              <Text color="cyan.300" display="inline">
-                universal-subtitles.app
-              </Text>
-            </Box>
-            <IconButton
-              icon={hasCopied ? <FiCheck /> : <FiCopy />}
-              aria-label="Copy download link"
-              onClick={onCopy}
-              variant="ghost"
-              ms="4"
-              isRound
-              color="white"
-            />
-          </Flex>
         </VStack>
       </HighlightsItem>
 
       <HighlightsItem title="When to use it">
         <Text color="muted" fontSize="lg">
-          Use Universal Subtitles to follow foreign-language media, caption remote
-          meetings, assist accessibility, or enable multilingual conversations
-          without changing the apps you already use.
+        Use Universal Subtitles to follow foreign-language media, caption remote meetings, 
+        help deaf and hard-of-hearing users access spoken content, and enable multilingual 
+        conversations, all without changing the apps you already use.
         </Text>
       </HighlightsItem>
 
-      <HighlightsTestimonialItem
-        name="Renata Alink"
-        description="Early user"
-        avatar="/static/images/avatar.jpg"
-        gradient={['pink.200', 'purple.500']}
-      >
-        “Universal Subtitles made our international calls so much easier — we
-        could see live captions and translations without changing any workflow.”
-      </HighlightsTestimonialItem>
-
-      <HighlightsItem
-        colSpan={[1, null, 2]}
-        title="Easy to get started"
-      >
+      <HighlightsItem colSpan={[1, null, 2]} title="Easy to get started">
         <Text color="muted" fontSize="lg">
           Install, choose your input/output languages, and toggle the overlay on.
           Built-in hotkeys and simple appearance settings let you tune captions
           in seconds.
         </Text>
-        <Wrap mt="8">
-          {[
-            'live captions',
-            'translation',
-            'overlay',
-            'hotkeys',
-            'accessibility',
-            'low-latency',
-            'appearance',
-            'API',
-            'privacy settings',
-          ].map((value) => (
-            <Tag
-              key={value}
-              variant="subtle"
-              colorScheme="purple"
-              rounded="full"
-              px="3"
-            >
-              {value}
-            </Tag>
-          ))}
-        </Wrap>
       </HighlightsItem>
     </Highlights>
   )
@@ -323,22 +274,27 @@ const FeaturesSection = () => {
     <Features
       id="features"
       title={
-        <Heading
-          lineHeight="short"
-          fontSize={['2xl', null, '4xl']}
-          textAlign="left"
-          as="p"
-        >
-          Live captions that follow your workflow.
-        </Heading>
+        <Box as="div">
+          <Heading
+            lineHeight="short"
+            fontSize={['2xl', null, '4xl']}
+            textAlign="left"
+            as="h2"
+            mb="2"
+          >
+            Live captions that follow your workflow.
+          </Heading>
+        </Box>
       }
       description={
-        <>
-          Universal Subtitles turns audio into readable captions and can translate
-          between languages on the fly.
-          <Br />
-          Works with any app, is configurable, and designed for low-latency use.
-        </>
+        <Box as="div">
+          <Text as="div">
+            Universal Subtitles turns audio into readable captions and can translate
+            between languages on the fly.
+            <Br />
+            Works with any app, is configurable, and designed for low-latency use.
+          </Text>
+        </Box>
       }
       align="left"
       columns={[1, 2, 3]}
@@ -353,7 +309,7 @@ const FeaturesSection = () => {
         },
         {
           title: 'Live translation',
-          icon: FiGlobe,
+          icon: FiFlag,
           description:
             'See what people are saying in your language. Translation works in real time for smoother conversations.',
           variant: 'inline',
@@ -405,8 +361,7 @@ const FeaturesSection = () => {
           icon: FiThumbsUp,
           description: (
             <>
-              Designed for low-latency captioning and minimal CPU impact so it
-              won&apos;t get in the way of your work or calls.
+              Designed for low-latency captioning and minimal CPU impact so it won&apos;t get in the way of your work or calls.
             </>
           ),
           variant: 'inline',
@@ -415,51 +370,7 @@ const FeaturesSection = () => {
     />
   )
 }
-
-const TestimonialsSection = () => {
-  const columns = React.useMemo(() => {
-    return testimonials.items.reduce<Array<typeof testimonials.items>>(
-      (columns, t, i) => {
-        columns[i % 3].push(t)
-
-        return columns
-      },
-      [[], [], []],
-    )
-  }, [])
-
-  return (
-    <Testimonials
-      title={testimonials.title}
-      columns={[1, 2, 3]}
-      innerWidth="container.xl"
-    >
-      <>
-        {columns.map((column, i) => (
-          <Stack key={i} spacing="8">
-            {column.map((t, i) => (
-              <Testimonial key={i} {...t} />
-            ))}
-          </Stack>
-        ))}
-      </>
-    </Testimonials>
-  )
-}
-
-const PricingSection = () => {
-  return (
-    <Pricing {...pricing}>
-      <Text p="8" textAlign="center" color="muted">
-        Choose a plan that fits your needs — free tier for basic captions, paid
-        plans for higher throughput, advanced translations, and premium support.
-      </Text>
-    </Pricing>
-  )
-}
-
 const FaqSection = () => {
   return <Faq {...faq} />
 }
-
 export default Home

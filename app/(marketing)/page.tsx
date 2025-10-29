@@ -152,28 +152,6 @@ It helps deaf and hard-of-hearing users follow conversations and media in real t
               </Box>
             </FallInPlace>
           </Hero>
-          <Box
-            height="560px"
-            position="absolute"
-            display={{ base: 'none', lg: 'block' }}
-            left={{ lg: '60%', xl: '55%' }}
-            width="80vw"
-            maxW="1000px"
-            margin="0 auto"
-          >
-            <FallInPlace delay={1}>
-              <Box overflow="hidden" height="100%">
-                <Image
-                  src="/static/list.png"
-                  width={1200}
-                  height={675}
-                  alt="Universal Subtitles overlay screenshot"
-                  quality="75"
-                  priority
-                />
-              </Box>
-            </FallInPlace>
-          </Box>
         </Stack>
       </Container>
       

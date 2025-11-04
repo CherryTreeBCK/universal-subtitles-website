@@ -63,7 +63,7 @@ const Home: NextPage = () => {
   )
 }
 
-const downloadUrl = '/UniversalSubtitles.exe'
+const downloadUrl = 'https://github.com/CherryTreeBCK/universal-subtitles-website/releases/download/v1.0.0/UniversalSubtitles.exe'
 
 import { fetchDownloadsCount } from '../App'
 

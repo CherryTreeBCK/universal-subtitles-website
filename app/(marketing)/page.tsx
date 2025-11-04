@@ -63,7 +63,7 @@ const Home: NextPage = () => {
   )
 }
 
-const downloadUrl = 'https://universal-subtitles.app/download'
+const downloadUrl = '/UniversalSubtitles.exe'
 
 import { fetchDownloadsCount } from '../App'
 

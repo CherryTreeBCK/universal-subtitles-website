@@ -1,0 +1,5 @@
+User-Agent: *
+Allow: /
+Disallow: /private/
+
+Sitemap: https://cherrytreebck.github.io/universal-subtitles-website/sitemap.xml

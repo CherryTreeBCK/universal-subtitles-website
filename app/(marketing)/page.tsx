@@ -59,8 +59,6 @@ const Home: NextPage = () => {
       </Head>
 
       <Box>
-        <p>Hello world!</p>
-
         <HeroSection />
         <HighlightsSection />
         <FeaturesSection />

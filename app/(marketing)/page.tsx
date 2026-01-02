@@ -48,18 +48,25 @@ import {
 } from '#components/highlights'
 import { FallInPlace } from '#components/motion/fall-in-place'
 import faq from '#data/faq'
+import Head from 'next/head'
 
 const Home: NextPage = () => {
-
   return (
-    <Box>
-      <HeroSection />
+    <>
+      <Head>
+        <title>Universal Subtitles</title>
+        <meta name="google-site-verification" content="JQpVM8vclkKOBQUnzGhU9zTTNA_lKOLbkdbeMova2es" />
+      </Head>
 
-      <HighlightsSection />
+      <Box>
+        <p>Hello world!</p>
 
-      <FeaturesSection />
-      <FaqSection />
-    </Box>
+        <HeroSection />
+        <HighlightsSection />
+        <FeaturesSection />
+        <FaqSection />
+      </Box>
+    </>
   )
 }
 

@@ -4,11 +4,12 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://cherrytreebck.github.io/universal-subtitles-website"),
-  title: "Universal Subtitles | Subtitles for Everything",
+  title: "Universal Subtitles",
   description:
     "Universal Subtitles adds real-time subtitles to any video, website, or app. Accessible captions for everything you watch, anywhere.",
   keywords: [
     "universal subtitles",
+    "benjamin kirschbaum",
     "real time subtitles",
     "live captions",
     "automatic subtitles",

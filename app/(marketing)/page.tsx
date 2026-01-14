@@ -142,7 +142,7 @@ It helps deaf and hard-of-hearing users follow conversations and media in real t
                   onClick={handleDownloadClick}
                   isLoading={loading}
                 >
-                  Download
+                  Download for Windows
                 </ButtonLink>
               </ButtonGroup>
               <Box mt="3">
